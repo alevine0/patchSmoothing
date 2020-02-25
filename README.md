@@ -12,9 +12,11 @@ ImageNet code expects the ILSVRC2012 training and validation sets to be in the d
 
 Explanation of files: (substitute 'mnist' for 'cifar' or 'imagenet' appropriately;  similarly substitute 'block' for 'band')
 
-```- train_mnist_band.py # Will train the base classifier, and save the model to the 'checkpoints' directory
+```
+- train_mnist_band.py # Will train the base classifier, and save the model to the 'checkpoints' directory
 
-- certify_mnist_band.py # Will load a model from 'checkpoints', and calculate and print clean and certified accuracies```
+- certify_mnist_band.py # Will load a model from 'checkpoints', and calculate and print clean and certified accuracies
+```
 
 Example Usage: 
 
