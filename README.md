@@ -1,4 +1,5 @@
-#(De)Randomized Smoothing for Certifiable Defense against Patch Attacks
+# (De)Randomized Smoothing for Certifiable Defense against Patch Attacks
+
 Code for the paper "(De)Randomized Smoothing for Certifiable Defense against Patch Attacks" by Alexander Levine and Soheil Feizi.
 
 Files are provided for training and evaluation of classifiers robust to patch attacks on MNIST, CIFAR-10, and ImageNet datasets.
@@ -11,14 +12,15 @@ ImageNet code expects the ILSVRC2012 training and validation sets to be in the d
 
 Explanation of files: (substitute 'mnist' for 'cifar' or 'imagenet' appropriately;  similarly substitute 'block' for 'band')
 
-- train_mnist_band.py # Will train the base classifier, and save the model to the 'checkpoints' directory
+```- train_mnist_band.py # Will train the base classifier, and save the model to the 'checkpoints' directory
 
-- certify_mnist_band.py # Will load a model from 'checkpoints', and calculate and print clean and certified accuracies
+- certify_mnist_band.py # Will load a model from 'checkpoints', and calculate and print clean and certified accuracies```
 
 Example Usage: 
 
+```
 python3 train_mnist_band.py --band_size 4 --lr 0.01 --end_epoch 199
 python3 train_mnist_band.py --band_size 4 --lr 0.001 --end_epoch 399 --resume mnist_one_band_lr_0.01_regularization_0.0005_band_4_epoch_199.pth
 python3 certify_mnist_band.py --band_size 4 --size_to_certify 5 --checkpoint mnist_one_band_lr_0.001_regularization_0.0005_band_4_epoch_399_resume_mnist_one_band_lr_0.01_regularization_0.0005_band_4_epoch_199.pth.pth
-
+```
 
