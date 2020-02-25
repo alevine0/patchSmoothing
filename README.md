@@ -26,3 +26,6 @@ python3 train_mnist_band.py --band_size 4 --lr 0.001 --end_epoch 399 --resume mn
 python3 certify_mnist_band.py --band_size 4 --size_to_certify 5 --checkpoint mnist_one_band_lr_0.001_regularization_0.0005_band_4_epoch_399_resume_mnist_one_band_lr_0.01_regularization_0.0005_band_4_epoch_199.pth.pth
 ```
 
+Attributions:
+- Code in the `pytorch_cifar` directory is from https://github.com/kuangliu/pytorch-cifar, with slight modification to allow for 6-channel input.
+- The file `resnet_imgnt.py` is modified from the PyTorch torchvision implementation of ResNet (https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py), again with slight modification to allow for 6-channel input.
