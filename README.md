@@ -1,4 +1,5 @@
-Code for the paper "(De)Randomized Smoothing for Certifiable Defense against Patch Attacks".
+#(De)Randomized Smoothing for Certifiable Defense against Patch Attacks
+Code for the paper "(De)Randomized Smoothing for Certifiable Defense against Patch Attacks" by Alexander Levine and Soheil Feizi.
 
 Files are provided for training and evaluation of classifiers robust to patch attacks on MNIST, CIFAR-10, and ImageNet datasets.
 
