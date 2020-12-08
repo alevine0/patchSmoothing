@@ -39,6 +39,59 @@ def random_mask_batch_one_sample(batch, block_size , reuse_noise = False):
 	out = torch.cat((out_c1,out_c2), 1)
 	#print(out[14,:,5:10,5:10])
 	return out
+
+previous_input_shape = None
+previous_block_size = 0
+previous_mask = None
+def universal_mask(input_shape, block_size):
+	global previous_input_shape
+	global previous_block_size
+	global previous_mask
+	if (previous_mask is None or not (input_shape == previous_input_shape and previous_block_size == block_size)):
+		print('Re-computing mask.....')
+		permuted_shape = (input_shape[0],input_shape[2],input_shape[3],input_shape[1],)
+		expanded_shape = (permuted_shape[0],permuted_shape[2],permuted_shape[1],permuted_shape[2],permuted_shape[3],)
+		out= torch.zeros(expanded_shape, device='cuda')
+		for pos in range(permuted_shape[2]):
+			if  (pos+block_size > permuted_shape[2]):
+				out[:,pos,:,pos:] = 1
+
+				out[:,pos,:,:pos+block_size-permuted_shape[2]] = 1
+			else:
+				out[:,pos,:,pos:pos+block_size] =1
+		out = out.reshape((permuted_shape[0]*permuted_shape[2],permuted_shape[1],permuted_shape[2],permuted_shape[3],))
+		previous_mask = out.detach()
+		previous_block_size = block_size
+		previous_input_shape = input_shape
+	return previous_mask
+
+
+def forward_soft_parallel(inpt,net,block_size,num_classes,threshhold):
+	predictions = torch.zeros(inpt.size(0), num_classes, device='cuda')
+	mask = universal_mask(inpt.shape, block_size)
+
+	batch = inpt.permute(0,2,3,1) #color channel last
+	batch_view = batch.unsqueeze(1).expand(-1,batch.shape[2],-1,-1,-1).reshape(batch.shape[0]*batch.shape[2],batch.shape[1],batch.shape[2],batch.shape[3])
+	#out_c1 = mask * batch_view
+	#out_c2 = mask * (1-batch_view)
+	out_c1=torch.zeros(mask.shape, device='cuda')
+	out_c2=torch.zeros(mask.shape, device='cuda')
+	nz = mask.nonzero(as_tuple=True)
+	out_c1[nz] = batch_view[nz]
+	out_c2[nz] = 1.-batch_view[nz]
+	out_c1 = out_c1.permute(0,3,1,2)
+	out_c2 = out_c2.permute(0,3,1,2)
+	out = torch.cat((out_c1,out_c2), 1)
+	softmx = torch.nn.functional.softmax(net(out),dim=1)
+	softmx = softmx.reshape(batch.shape[0],batch.shape[2],num_classes)
+	softout = softmx.mean(dim=1)
+	hardout =  (softmx >= threshhold).type(torch.float).sum(dim=1)
+	predinctionsnp = hardout.cpu().numpy()
+	idxsort = numpy.argsort(-predinctionsnp,axis=1,kind='stable')
+	hardclass = torch.tensor(idxsort[:,0]).cuda()
+	return softout,hardclass
+
+
 def predict_and_certify(inpt, net,block_size, size_to_certify, num_classes, threshold=0.0):
 	predictions = torch.zeros(inpt.size(0), num_classes).type(torch.int).cuda()
 	batch = inpt.permute(0,2,3,1) #color channel last

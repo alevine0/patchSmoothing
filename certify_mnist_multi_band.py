@@ -19,6 +19,7 @@ parser.add_argument('--keep', default=2, type=int, help='number of bands')
 parser.add_argument('--size_to_certify', default=5, type=int, help='size_to_certify')
 parser.add_argument('--checkpoint', help='checkpoint')
 parser.add_argument('--threshhold', default=0.2, type=float, help='threshold for smoothing abstain')
+parser.add_argument('--test', action='store_true', help='Use test set (vs validation)')
 
 args = parser.parse_args()
 
@@ -32,8 +33,11 @@ transform_test = transforms.Compose([
   #  transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
 
+val_indices = torch.load('validation.t7')
 testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform_test)
-testloader = torch.utils.data.DataLoader(testset, batch_size=10000, shuffle=False, num_workers=2)
+if (args.test):
+    val_indices = list(set(range(len(testset))) - set(val_indices.numpy().tolist()))
+testloader = torch.utils.data.DataLoader(torch.utils.data.Subset(testset,val_indices), batch_size=100, shuffle=False, num_workers=2)
 
 
 # Model
@@ -43,7 +47,7 @@ if not os.path.exists('./checkpoints'):
     os.makedirs('./checkpoints')
 class Flatten(nn.Module):
     def forward(self, x):
-        return x.view(x.size(0), -1)
+        return x.reshape(x.size(0), -1)
 net = nn.Sequential(
         nn.Conv2d(2, 64, 4, stride=2, padding=1),
         nn.ReLU(),

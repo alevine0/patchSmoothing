@@ -63,7 +63,7 @@ nomtestloader = torch.utils.data.DataLoader(testset, batch_size=512, shuffle=Fal
 print('==> Building model..')
 class Flatten(nn.Module):
     def forward(self, x):
-        return x.view(x.size(0), -1)
+        return x.reshape(x.size(0), -1)
 net = nn.Sequential(
         nn.Conv2d(2, 64, 4, stride=2, padding=1),
         nn.ReLU(),

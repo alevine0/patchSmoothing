@@ -23,6 +23,7 @@ parser.add_argument('--threshhold', default=0.2, type=float, help='threshold for
 parser.add_argument('--model', default='resnet50', type=str, help='model')
 parser.add_argument('--valpath', default='imagenet-val/val', type=str, help='Path to ImageNet validation set')
 parser.add_argument('--skip', default=50,type=int, help='Number of images to skip')
+parser.add_argument('--test', action='store_true', help='Use test set (vs validation)')
 
 args = parser.parse_args()
 
@@ -36,8 +37,10 @@ valset = datasets.ImageFolder(valdir, transforms.Compose([
         transforms.ToTensor(),
         normalize,
     ]))
-
-skips = list(range(0, len(valset), args.skip))
+start = 0
+if (args.test):
+    start = int(args.skip/2)
+skips = list(range(start, len(valset), args.skip))
 
 valset_1 = torch.utils.data.Subset(valset, skips)
 testloader = torch.utils.data.DataLoader(
