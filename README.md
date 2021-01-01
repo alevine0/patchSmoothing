@@ -29,10 +29,12 @@ python3 certify_mnist_band.py --band_size 4 --size_to_certify 5 --test --checkpo
 
 There is also code to attack column-smoothed CIFAR-10 models:
 
+```
 attack_cifar_band.py  -- Patch attack on smoothed classifier
 attack_cifar_band_linf.py  -- L-infinity attack on smoothed classifier
 attack_cifar_baseline.py  -- Patch attack on baseline classifier
 attack_cifar_band_linf.py  -- L-infinity attack on baseline classifier
+```
 
 Attributions:
 - Code in the `pytorch_cifar` directory is from https://github.com/kuangliu/pytorch-cifar, with slight modification to allow for 6-channel input.
